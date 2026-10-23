@@ -99,11 +99,11 @@ button:hover { background: #d5e4f2; }
 </head>
 <body>
 
-<h1>Newton's Three Laws of Motion</h1>
-<p>Interactive physics models — change the settings, run each model, and observe the motion.</p>
+<h1>Newton's Three Laws of Motion Models</h1>
+<p>this took so long.</p>
 
 <section class="model">
-<h2>Model 1: First Law — Inertia</h2>
+<h2>Model 1: First Law, Inertia</h2>
 <p>An object stays at rest or continues moving at a constant velocity unless an unbalanced force acts on it.</p>
 
 <div class="track" id="track1">
@@ -117,10 +117,10 @@ button:hover { background: #d5e4f2; }
 <label>Friction: <b id="friction1Text">0</b></label>
 <input id="friction1" type="range" min="0" max="3" step="1" value="0">
 
-<p class="small">Try setting force to 0 and friction to 0, then press Run. The cart continues moving. Add friction to see it slow down.</p>
+<p class="small">When the outside force acting on the moving car is 0, it continues moving. Try adding friction and making the leftward force against the moving cart higher, and see how it changes the carts motion.</p>
 <button onclick="run1()">Run</button>
 <button onclick="reset1()">Reset</button>
-<div class="readout" id="result1">Ready. Set the force and press Run.</div>
+<div class="readout" id="result1">Set the force and press run</div>
 </section>
 
 <section class="model">
@@ -145,7 +145,7 @@ button:hover { background: #d5e4f2; }
 
 <section class="model">
 <h2>Model 3: Third Law — Action and Reaction</h2>
-<p>When two objects interact, they exert equal and opposite forces on each other.</p>
+<p>When two objects touch/collide, they exert equal and opposite forces on each other.</p>
 
 <div class="track" id="track3">
   <div class="cart" id="cart3a"></div>
@@ -173,7 +173,7 @@ button:hover { background: #d5e4f2; }
 <p><b>First Law:</b> Motion does not change unless a net force acts on an object.</p>
 <p><b>Second Law:</b> Acceleration depends on net force and mass. F = ma.</p>
 <p><b>Third Law:</b> Interaction forces are equal and opposite, but different masses can have different accelerations.</p>
-<p class="small">These are simplified models. Real carts may experience friction and other forces.</p>
+<p class="small">These are simplified models. Real carts may experience friction, gravity, etc.</p>
 </section>
 
 <script>
@@ -315,7 +315,7 @@ function run3() {
   let frames = 0;
 
   document.getElementById("result3").textContent =
-    "The carts are moving toward each other. Watch what happens at impact!";
+    "wow i wonder whats about to happen??!";
 
   const timer = setInterval(() => {
     frames++;
@@ -336,7 +336,7 @@ function run3() {
       v3b = (2 * m1 * u1 + (m2 - m1) * u2) / (m1 + m2);
 
       document.getElementById("result3").textContent =
-        "Collision! Each cart pushes on the other with an equal and opposite force. Different masses can produce different changes in motion.";
+        "Collision happened! Each cart pushes on the other with an equal and opposite force. Different masses can produce different changes in motion.";
     }
 
     place("cart3a", x3a);
