@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -99,11 +100,11 @@ button:hover { background: #d5e4f2; }
 </head>
 <body>
 
-<h1>Newton's Three Laws of Motion Models</h1>
-<p>This took ages to make.</p>
+<h1>Newton's Three Laws of Motion</h1>
+<p>Interactive physics models — change the settings, run each model, and observe the motion.</p>
 
 <section class="model">
-<h2>Model 1: First Law: Inertia</h2>
+<h2>Model 1: First Law — Inertia</h2>
 <p>An object stays at rest or continues moving at a constant velocity unless an unbalanced force acts on it.</p>
 
 <div class="track" id="track1">
@@ -117,7 +118,7 @@ button:hover { background: #d5e4f2; }
 <label>Friction: <b id="friction1Text">0</b></label>
 <input id="friction1" type="range" min="0" max="3" step="1" value="0">
 
-<p class="small">When setting force to 0 and friction to 0, the cart continues moving cause no unbalanced force is acting on it. Add friction to see it slow down.</p>
+<p class="small">Try setting force to 0 and friction to 0, then press Run. The cart continues moving. Add friction to see it slow down.</p>
 <button onclick="run1()">Run</button>
 <button onclick="reset1()">Reset</button>
 <div class="readout" id="result1">Ready. Set the force and press Run.</div>
@@ -145,7 +146,7 @@ button:hover { background: #d5e4f2; }
 
 <section class="model">
 <h2>Model 3: Third Law — Action and Reaction</h2>
-<p>When two objects touch, they exert equal and opposite forces on each other.The action and reaction happens on different objects, so that's why it doesnt cancel out.</p>
+<p>When two objects interact, they exert equal and opposite forces on each other.</p>
 
 <div class="track" id="track3">
   <div class="cart" id="cart3a"></div>
@@ -168,7 +169,13 @@ button:hover { background: #d5e4f2; }
 <div class="readout" id="result3">The forces are equal in size and opposite in direction.</div>
 </section>
 
- 
+<section class="model">
+<h2>Conclusion</h2>
+<p><b>First Law:</b> Motion does not change unless a net force acts on an object.</p>
+<p><b>Second Law:</b> Acceleration depends on net force and mass. F = ma.</p>
+<p><b>Third Law:</b> Interaction forces are equal and opposite, but different masses can have different accelerations.</p>
+<p class="small">These are simplified models. Real carts may experience friction and other forces.</p>
+</section>
 
 <script>
 let timers = {};
@@ -208,8 +215,8 @@ function run1() {
   v1 = force === 0 ? 2 : v1;
   document.getElementById("result1").textContent =
     force === 0 && friction === 0
-    ? "since theres no net force the cart continues moving"
-    : "The net force changes the cart's velocity. Meanwhile firction opposes motion, and makes the object move slower";
+    ? "No net force: the moving cart keeps moving at constant speed."
+    : "The net force changes the cart's velocity. Friction opposes motion.";
   timers[1] = setInterval(() => {
     const f = +document.getElementById("force1").value;
     const fr = +document.getElementById("friction1").value;
@@ -264,7 +271,6 @@ document.getElementById("mass2").oninput = function() {
 };
 
 
-
 function reset3() {
   stop(3);
 
@@ -283,7 +289,7 @@ function reset3() {
   arrow("arrow3b", x3b + 25, "←");
 
   document.getElementById("result3").textContent =
-    "The carts are gonna move toward eachother and collide.";
+    "Press Run: the carts will move toward each other and collide.";
 }
 
 function run3() {
@@ -292,6 +298,85 @@ function run3() {
   const track = document.getElementById("track3");
   const w = track.clientWidth;
   const cartWidth = 58;
--
 
+  // Reset to opposite sides of the track
+  x3a = 20;
+  x3b = w - 78;
+
+  const force = Number(document.getElementById("force3").value);
+  const m1 = Number(document.getElementById("mass3a").value);
+  const m2 = Number(document.getElementById("mass3b").value);
+
+  // Both carts approach the collision
+  const speed = 1.5 + force * 0.12;
+  v3a = speed;
+  v3b = -speed;
+
+  let collided = false;
+  let frames = 0;
+
+  document.getElementById("result3").textContent =
+    "The carts are moving toward each other. Watch what happens at impact!";
+
+  const timer = setInterval(() => {
+    frames++;
+
+    x3a += v3a;
+    x3b += v3b;
+
+    // Detect when the carts touch
+    if (!collided && x3a + cartWidth >= x3b) {
+      collided = true;
+      x3a = x3b - cartWidth;
+
+      // Simplified 1D elastic collision equations
+      const u1 = v3a;
+      const u2 = v3b;
+
+      v3a = ((m1 - m2) * u1 + 2 * m2 * u2) / (m1 + m2);
+      v3b = (2 * m1 * u1 + (m2 - m1) * u2) / (m1 + m2);
+
+      document.getElementById("result3").textContent =
+        "Collision! Each cart pushes on the other with an equal and opposite force. Different masses can produce different changes in motion.";
+    }
+
+    place("cart3a", x3a);
+    place("cart3b", x3b);
+
+    arrow("arrow3a", x3a + 25, v3a >= 0 ? "→" : "←");
+    arrow("arrow3b", x3b + 25, v3b >= 0 ? "→" : "←");
+
+    // Stop once both carts have bounced and reached the track edges
+    const blueAtEdge = x3a <= 0 || x3a + cartWidth >= w;
+    const orangeAtEdge = x3b <= 0 || x3b + cartWidth >= w;
+
+    if (collided && (blueAtEdge || orangeAtEdge || frames > 500)) {
+      clearInterval(timer);
+      document.getElementById("result3").textContent +=
+        " Reset to try different masses or force settings.";
+    }
+  }, 30);
+
+  window.timers = window.timers || {};
+  window.timers[3] = timer;
+}
+
+document.getElementById("force3").oninput = function() {
+  document.getElementById("force3Text").textContent = this.value + " N";
+};
+document.getElementById("mass3a").oninput = function() {
+  document.getElementById("mass3aText").textContent = this.value + " kg";
+};
+document.getElementById("mass3b").oninput = function() {
+  document.getElementById("mass3bText").textContent = this.value + " kg";
+};
+
+window.addEventListener("resize", () => {
+  place("cart1", x1); place("cart2", x2);
+  place("cart3a", x3a); place("cart3b", x3b);
+});
+reset1(); reset2(); reset3();
+</script>
+</body>
+</html>
 
