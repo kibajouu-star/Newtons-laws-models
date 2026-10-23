@@ -1,0 +1,82 @@
+
+  // Reset to opposite sides of the track
+  x3a = 20;
+  x3b = w - 78;
+
+  const force = Number(document.getElementById("force3").value);
+  const m1 = Number(document.getElementById("mass3a").value);
+  const m2 = Number(document.getElementById("mass3b").value);
+
+  // Both carts approach the collision
+  const speed = 1.5 + force * 0.12;
+  v3a = speed;
+  v3b = -speed;
+
+  let collided = false;
+  let frames = 0;
+
+  document.getElementById("result3").textContent =
+    "The carts are moving toward each other. Wow i wonder whats gonna happen??!";
+
+  const timer = setInterval(() => {
+    frames++;
+
+    x3a += v3a;
+    x3b += v3b;
+
+    // Detect when the carts touch
+    if (!collided && x3a + cartWidth >= x3b) {
+      collided = true;
+      x3a = x3b - cartWidth;
+
+      // Simplified 1D elastic collision equations
+      const u1 = v3a;
+      const u2 = v3b;
+
+      v3a = ((m1 - m2) * u1 + 2 * m2 * u2) / (m1 + m2);
+      v3b = (2 * m1 * u1 + (m2 - m1) * u2) / (m1 + m2);
+
+      document.getElementById("result3").textContent =
+        "What happens is that they collide, both cart pushes on the other with an equal and opposite force. Different masses can change this outcome.";
+    }
+
+    place("cart3a", x3a);
+    place("cart3b", x3b);
+
+    arrow("arrow3a", x3a + 25, v3a >= 0 ? "→" : "←");
+    arrow("arrow3b", x3b + 25, v3b >= 0 ? "→" : "←");
+
+    // Stop once both carts have bounced and reached the track edges
+    const blueAtEdge = x3a <= 0 || x3a + cartWidth >= w;
+    const orangeAtEdge = x3b <= 0 || x3b + cartWidth >= w;
+
+    if (collided && (blueAtEdge || orangeAtEdge || frames > 500)) {
+      clearInterval(timer);
+      document.getElementById("result3").textContent +=
+        " Reset to try different masses or force settings.";
+    }
+  }, 30);
+
+  window.timers = window.timers || {};
+  window.timers[3] = timer;
+}
+
+
+document.getElementById("force3").oninput = function() {
+  document.getElementById("force3Text").textContent = this.value + " N";
+};
+document.getElementById("mass3a").oninput = function() {
+  document.getElementById("mass3aText").textContent = this.value + " kg";
+};
+document.getElementById("mass3b").oninput = function() {
+  document.getElementById("mass3bText").textContent = this.value + " kg";
+};
+
+window.addEventListener("resize", () => {
+  place("cart1", x1); place("cart2", x2);
+  place("cart3a", x3a); place("cart3b", x3b);
+});
+reset1(); reset2(); reset3();
+</script>
+</body>
+</html>
