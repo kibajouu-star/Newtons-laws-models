@@ -1,82 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Newton's Three Laws Simulation</title>
+<style>
+body {
+  font-family: Arial, sans-serif;
+  color: #222;
+  background: #f4f6f8;
+  margin: 18px;
+  line-height: 1.45;
+}
+h1 { font-size: 27px; }
+h2 { font-size: 21px; margin-top: 0; }
+.model {
+  background: white;
+  border: 1px solid #aaa;
+  padding: 16px;
+  margin: 18px 0;
+}
+p { margin: 8px 0; }
+label { display: block; margin-top: 12px; }
+input[type=range] {
+  display: block;
+  width: 100%;
+  max-width: 440px;
+  margin: 8px 0;
+  accent-color: #1769aa;
+}
+button {
+  padding: 8px 12px;
+  margin: 8px 6px 4px 0;
+  border: 1px solid #444;
+  background: #e8edf2;
+  color: #111;
+  cursor: pointer;
+  font-size: 14px;
+}
+button:hover { background: #d5e4f2; }
+.track {
+  height: 100px;
+  background: #e4e4e4;
+  border: 2px solid #555;
+  position: relative;
+  overflow: hidden;
+  margin: 12px 0;
+}
+.track:after {
+  content: "";
+  position: absolute;
+  height: 3px;
+  background: #777;
+  bottom: 12px;
+  left: 0;
+  right: 0;
+}
+.cart {
+  position: absolute;
+  width: 58px;
+  height: 32px;
+  top: 48px;
+  left: 20px;
+  background: #2878b5;
+  border: 2px solid #173b59;
+  box-sizing: border-box;
+  z-index: 2;
+}
+.cart:before, .cart:after {
+  content: "";
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #222;
+  border: 1px solid white;
+  bottom: -9px;
+}
+.cart:before { left: 5px; }
+.cart:after { right: 5px; }
+.arrow {
+  position: absolute;
+  top: 12px;
+  left: 85px;
+  font-size: 25px;
+  font-weight: bold;
+  color: #bd3030;
+  z-index: 3;
+}
+.readout {
+  padding: 8px;
+  background: #eef4f8;
+  border-left: 4px solid #2878b5;
+  margin-top: 10px;
+}
+.small { font-size: 14px; color: #444; }
+</style>
+</head>
+<body>
 
-  // Reset to opposite sides of the track
+<h1>Newton's Three Laws of Motion Models</h1>
+<p>This took ages to make.</p>
+
+<section class="model">
+<h2>Model 1: First Law: Inertia</h2>
+<p>An object stays at rest or continues moving at a constant velocity unless an unbalanced force acts on it.</p>
+
+<div class="track" id="track1">
+  <div class="cart" id="cart1"></div>
+  <div class="arrow" id="arrow1">→</div>
+</div>
+
+<label>Applied force: <b id="force1Text">0 N</b></label>
+<input id="force1" type="range" min="-5" max="5" step="1" value="0">
+
+<label>Friction: <b id="friction1Text">0</b></label>
+<input id="friction1" type="range" min="0" max="3" step="1" value="0">
+
+<p class="small">When setting force to 0 and friction to 0, the cart continues moving cause no unbalanced force is acting on it. Add friction to see it slow down.</p>
+<button onclick="run1()">Run</button>
+<button onclick="reset1()">Reset</button>
+<div class="readout" id="result1">Ready. Set the force and press Run.</div>
+</section>
+
+<section class="model">
+<h2>Model 2: Second Law — F = ma</h2>
+<p>An object's acceleration increases with force and decreases with mass.</p>
+
+<div class="track" id="track2">
+  <div class="cart" id="cart2"></div>
+  <div class="arrow" id="arrow2">→</div>
+</div>
+
+<label>Force: <b id="force2Text">10 N</b></label>
+<input id="force2" type="range" min="1" max="20" value="10">
+
+<label>Mass: <b id="mass2Text">2 kg</b></label>
+<input id="mass2" type="range" min="1" max="10" value="2">
+
+<button onclick="run2()">Run</button>
+<button onclick="reset2()">Reset</button>
+<div class="readout" id="result2">Acceleration = force ÷ mass.</div>
+</section>
+
+<section class="model">
+<h2>Model 3: Third Law — Action and Reaction</h2>
+<p>When two objects touch, they exert equal and opposite forces on each other.The action and reaction happens on different objects, so that's why it doesnt cancel out.</p>
+
+<div class="track" id="track3">
+  <div class="cart" id="cart3a"></div>
+  <div class="cart" id="cart3b" style="background:#d68a28;border-color:#75470f"></div>
+  <div class="arrow" id="arrow3a">←</div>
+  <div class="arrow" id="arrow3b">→</div>
+</div>
+
+<label>Push force on each cart: <b id="force3Text">10 N</b></label>
+<input id="force3" type="range" min="1" max="20" value="10">
+
+<label>Mass of blue cart: <b id="mass3aText">2 kg</b></label>
+<input id="mass3a" type="range" min="1" max="10" value="2">
+
+<label>Mass of orange cart: <b id="mass3bText">4 kg</b></label>
+<input id="mass3b" type="range" min="1" max="10" value="4">
+
+<button onclick="run3()">Run</button>
+<button onclick="reset3()">Reset</button>
+<div class="readout" id="result3">The forces are equal in size and opposite in direction.</div>
+</section>
+
+ 
+
+<script>
+let timers = {};
+let x1 = 20, v1 = 0;
+let x2 = 20, v2 = 0;
+let x3a = 20, x3b = 0;
+let v3a = 0, v3b = 0;
+
+function stop(n) {
+  if (timers[n]) clearInterval(timers[n]);
+  delete timers[n];
+}
+function widthOf(id) {
+  return document.getElementById(id).clientWidth;
+}
+function place(id, x) {
+  const el = document.getElementById(id);
+  const track = el.parentElement;
+  const max = Math.max(0, track.clientWidth - el.offsetWidth);
+  el.style.left = Math.max(0, Math.min(max, x)) + "px";
+}
+function arrow(id, x, symbol) {
+  const el = document.getElementById(id);
+  el.style.left = Math.max(0, x) + "px";
+  el.textContent = symbol;
+}
+function reset1() {
+  stop(1); x1 = 20; v1 = 0;
+  place("cart1", x1);
+  arrow("arrow1", 85, "→");
+  document.getElementById("result1").textContent = "Reset. Set force and friction, then press Run.";
+}
+function run1() {
+  stop(1);
+  const force = +document.getElementById("force1").value;
+  const friction = +document.getElementById("friction1").value;
+  v1 = force === 0 ? 2 : v1;
+  document.getElementById("result1").textContent =
+    force === 0 && friction === 0
+    ? "since theres no net force the cart continues moving"
+    : "The net force changes the cart's velocity. Meanwhile firction opposes motion, and makes the object move slower";
+  timers[1] = setInterval(() => {
+    const f = +document.getElementById("force1").value;
+    const fr = +document.getElementById("friction1").value;
+    v1 += (f * 0.025 - Math.sign(v1) * fr * 0.012);
+    if (Math.abs(v1) < 0.015 && f === 0) v1 = 0;
+    x1 += v1;
+    const max = widthOf("track1") - 62;
+    if (x1 < 0 || x1 > max) {
+      x1 = Math.max(0, Math.min(max, x1));
+      v1 *= -0.7;
+    }
+    place("cart1", x1);
+    arrow("arrow1", Math.max(5, Math.min(widthOf("track1") - 35, x1 + 65)), f < 0 ? "←" : "→");
+  }, 30);
+}
+document.getElementById("force1").oninput = function() {
+  document.getElementById("force1Text").textContent = this.value + " N";
+};
+document.getElementById("friction1").oninput = function() {
+  document.getElementById("friction1Text").textContent = this.value;
+};
+
+function reset2() {
+  stop(2); x2 = 20; v2 = 0;
+  place("cart2", x2); arrow("arrow2", 85, "→");
+  document.getElementById("result2").textContent = "Acceleration = force ÷ mass.";
+}
+function run2() {
+  stop(2);
+  const f = +document.getElementById("force2").value;
+  const m = +document.getElementById("mass2").value;
+  const a = f / m;
+  document.getElementById("result2").textContent =
+    "Acceleration = " + f + " N ÷ " + m + " kg = " + a.toFixed(2) + " m/s².";
+  v2 = 0;
+  timers[2] = setInterval(() => {
+    const force = +document.getElementById("force2").value;
+    const mass = +document.getElementById("mass2").value;
+    v2 += (force / mass) * 0.025;
+    x2 += v2;
+    const max = widthOf("track2") - 62;
+    if (x2 >= max) { x2 = 0; v2 = 0; }
+    place("cart2", x2);
+    arrow("arrow2", Math.min(widthOf("track2") - 35, x2 + 65), "→");
+  }, 30);
+}
+document.getElementById("force2").oninput = function() {
+  document.getElementById("force2Text").textContent = this.value + " N";
+};
+document.getElementById("mass2").oninput = function() {
+  document.getElementById("mass2Text").textContent = this.value + " kg";
+};
+
+
+
+function reset3() {
+  stop(3);
+
+  const track = document.getElementById("track3");
+  const w = track.clientWidth;
+
   x3a = 20;
   x3b = w - 78;
+  v3a = 0;
+  v3b = 0;
 
-  const force = Number(document.getElementById("force3").value);
-  const m1 = Number(document.getElementById("mass3a").value);
-  const m2 = Number(document.getElementById("mass3b").value);
+  place("cart3a", x3a);
+  place("cart3b", x3b);
 
-  // Both carts approach the collision
-  const speed = 1.5 + force * 0.12;
-  v3a = speed;
-  v3b = -speed;
-
-  let collided = false;
-  let frames = 0;
+  arrow("arrow3a", x3a + 25, "→");
+  arrow("arrow3b", x3b + 25, "←");
 
   document.getElementById("result3").textContent =
-    "The carts are moving toward each other. Wow i wonder whats gonna happen??!";
-
-  const timer = setInterval(() => {
-    frames++;
-
-    x3a += v3a;
-    x3b += v3b;
-
-    // Detect when the carts touch
-    if (!collided && x3a + cartWidth >= x3b) {
-      collided = true;
-      x3a = x3b - cartWidth;
-
-      // Simplified 1D elastic collision equations
-      const u1 = v3a;
-      const u2 = v3b;
-
-      v3a = ((m1 - m2) * u1 + 2 * m2 * u2) / (m1 + m2);
-      v3b = (2 * m1 * u1 + (m2 - m1) * u2) / (m1 + m2);
-
-      document.getElementById("result3").textContent =
-        "What happens is that they collide, both cart pushes on the other with an equal and opposite force. Different masses can change this outcome.";
-    }
-
-    place("cart3a", x3a);
-    place("cart3b", x3b);
-
-    arrow("arrow3a", x3a + 25, v3a >= 0 ? "→" : "←");
-    arrow("arrow3b", x3b + 25, v3b >= 0 ? "→" : "←");
-
-    // Stop once both carts have bounced and reached the track edges
-    const blueAtEdge = x3a <= 0 || x3a + cartWidth >= w;
-    const orangeAtEdge = x3b <= 0 || x3b + cartWidth >= w;
-
-    if (collided && (blueAtEdge || orangeAtEdge || frames > 500)) {
-      clearInterval(timer);
-      document.getElementById("result3").textContent +=
-        " Reset to try different masses or force settings.";
-    }
-  }, 30);
-
-  window.timers = window.timers || {};
-  window.timers[3] = timer;
+    "The carts are gonna move toward eachother and collide.";
 }
 
+function run3() {
+  stop(3);
 
-document.getElementById("force3").oninput = function() {
-  document.getElementById("force3Text").textContent = this.value + " N";
-};
-document.getElementById("mass3a").oninput = function() {
-  document.getElementById("mass3aText").textContent = this.value + " kg";
-};
-document.getElementById("mass3b").oninput = function() {
-  document.getElementById("mass3bText").textContent = this.value + " kg";
-};
+  const track = document.getElementById("track3");
+  const w = track.clientWidth;
+  const cartWidth = 58;
+-
 
-window.addEventListener("resize", () => {
-  place("cart1", x1); place("cart2", x2);
-  place("cart3a", x3a); place("cart3b", x3b);
-});
-reset1(); reset2(); reset3();
-</script>
-</body>
-</html>
+
