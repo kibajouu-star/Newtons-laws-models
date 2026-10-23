@@ -124,7 +124,7 @@ button:hover { background: #d5e4f2; }
 </section>
 
 <section class="model">
-<h2>Model 2: Second Law — F = ma</h2>
+<h2>Model 2: Second Law: F = ma</h2>
 <p>An object's acceleration increases with force and decreases with mass.</p>
 
 <div class="track" id="track2">
@@ -144,7 +144,7 @@ button:hover { background: #d5e4f2; }
 </section>
 
 <section class="model">
-<h2>Model 3: Third Law — Action and Reaction</h2>
+<h2>Model 3: Third Law: Action and Reaction</h2>
 <p>When two objects touch/collide, they exert equal and opposite forces on each other.</p>
 
 <div class="track" id="track3">
@@ -205,7 +205,7 @@ function reset1() {
   stop(1); x1 = 20; v1 = 0;
   place("cart1", x1);
   arrow("arrow1", 85, "→");
-  document.getElementById("result1").textContent = "Reset. Set force and friction, then press Run.";
+  document.getElementById("result1").textContent = "reset, set force and friction then click run";
 }
 function run1() {
   stop(1);
@@ -214,8 +214,8 @@ function run1() {
   v1 = force === 0 ? 2 : v1;
   document.getElementById("result1").textContent =
     force === 0 && friction === 0
-    ? "No net force: the moving cart keeps moving at constant speed."
-    : "The net force changes the cart's velocity. Friction opposes motion.";
+    ? "Since theres no net force, the cart keeps moving as usual."
+    : "The net force changes the carts motion.";
   timers[1] = setInterval(() => {
     const f = +document.getElementById("force1").value;
     const fr = +document.getElementById("friction1").value;
@@ -288,7 +288,7 @@ function reset3() {
   arrow("arrow3b", x3b + 25, "←");
 
   document.getElementById("result3").textContent =
-    "Press Run: the carts will move toward each other and collide.";
+    "the carts will move toward each other and collide.";
 }
 
 function run3() {
